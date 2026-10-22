@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Check, ShoppingBag, AlertTriangle, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { API_BASE_URL } from '../config/api';
 
 interface ListingDetail {
   id: string;
@@ -58,7 +59,7 @@ export const BookDetails: React.FC = () => {
     const fetchListing = async () => {
       try {
         if (!id) return;
-        const res = await fetch(`http://localhost:8000/api/v1/listings/${id}`);
+        const res = await fetch(`${API_BASE_URL}/api/v1/listings/${id}`);
         if (res.ok) {
           const data = await res.json();
           setListing(data);

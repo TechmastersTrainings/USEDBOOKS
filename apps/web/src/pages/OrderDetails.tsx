@@ -5,6 +5,7 @@ import {
   AlertTriangle, ArrowLeft, RefreshCw, XCircle, MapPin
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 interface OrderItem {
   id: string;
@@ -98,7 +99,7 @@ export const OrderDetails: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/orders/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/orders/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -121,7 +122,7 @@ export const OrderDetails: React.FC = () => {
 
     setCancelling(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/orders/${id}/cancel`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/orders/${id}/cancel`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +150,7 @@ export const OrderDetails: React.FC = () => {
 
     setDisputing(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/orders/${id}/dispute`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/orders/${id}/dispute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

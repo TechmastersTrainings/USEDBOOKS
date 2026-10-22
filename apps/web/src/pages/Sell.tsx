@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Search, ArrowRight, ArrowLeft, AlertCircle, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 interface Address {
   id: string;
@@ -57,7 +58,7 @@ export const Sell: React.FC = () => {
 
   const fetchAddresses = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/addresses', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -82,7 +83,7 @@ export const Sell: React.FC = () => {
 
     try {
       const cleanIsbn = isbnQuery.trim().replace(/[-\s]/g, '');
-      const res = await fetch(`http://localhost:8000/api/v1/catalog/isbn/${cleanIsbn}`);
+      const res = await fetch(`${API_BASE_URL}/api/v1/catalog/isbn/${cleanIsbn}`);
       if (res.ok) {
         const book = await res.json();
         setBookCatalogueId(book.id || null);
@@ -163,7 +164,7 @@ export const Sell: React.FC = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const res = await fetch('http://localhost:8000/api/v1/listings', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/listings`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
@@ -178,7 +179,7 @@ export const Sell: React.FC = () => {
 
       // Attach photos
       for (let i = 0; i < photoUrls.length; i++) {
-        await fetch(`http://localhost:8000/api/v1/listings/${listingId}/images?image_url=${encodeURIComponent(photoUrls[i])}&is_primary=${i === 0}&caption=Physical copy photo`, {
+        await fetch(`${API_BASE_URL}/api/v1/listings/${listingId}/images?image_url=${encodeURIComponent(photoUrls[i])}&is_primary=${i === 0}&caption=Physical copy photo`, {
           method: 'POST',
           headers
         });

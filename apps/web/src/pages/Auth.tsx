@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 export const Auth: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -47,7 +48,7 @@ export const Auth: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/otp/send', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/otp/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phone.trim() }),
@@ -76,7 +77,7 @@ export const Auth: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/otp/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -115,7 +116,7 @@ export const Auth: React.FC = () => {
           payload.phone_number = identifier.trim();
         }
 
-        const res = await fetch('http://localhost:8000/api/v1/auth/register', {
+        const res = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -127,7 +128,7 @@ export const Auth: React.FC = () => {
         login(data.access_token, data.user);
         navigate('/profile');
       } else {
-        const res = await fetch('http://localhost:8000/api/v1/auth/login', {
+        const res = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

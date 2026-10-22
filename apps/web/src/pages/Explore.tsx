@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BookCard } from '../components/BookCard';
 import { SlidersHorizontal, ArrowUpDown, MapPin } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const Explore: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +27,7 @@ export const Explore: React.FC = () => {
   ];
 
   React.useEffect(() => {
-    let url = `http://localhost:8000/api/v1/listings?sort=${sortBy}`;
+    let url = `${API_BASE_URL}/api/v1/listings?sort=${sortBy}`;
     if (query) url += `&q=${encodeURIComponent(query)}`;
     if (selectedCondition !== 'all') url += `&condition=${selectedCondition}`;
     if (priceFilter === 'under_199') url += `&max_price=199`;

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 interface Address {
   id: string;
@@ -63,7 +64,7 @@ export const Checkout: React.FC = () => {
   const fetchAddresses = async () => {
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/addresses', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -87,7 +88,7 @@ export const Checkout: React.FC = () => {
     setPincode(pin);
     if (pin.length === 6) {
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/users/pincode/${pin}`);
+        const res = await fetch(`${API_BASE_URL}/api/v1/users/pincode/${pin}`);
         if (res.ok) {
           const data = await res.json();
           setCity(data.city);
@@ -105,7 +106,7 @@ export const Checkout: React.FC = () => {
 
     setSavingAddress(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/addresses', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ export const Checkout: React.FC = () => {
     setOrderError(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

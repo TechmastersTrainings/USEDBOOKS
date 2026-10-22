@@ -5,6 +5,7 @@ import {
   AlertCircle, LogOut, Check, Package, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 
 interface Address {
   id: string;
@@ -89,7 +90,7 @@ export const Profile: React.FC = () => {
   const fetchOrders = async () => {
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:8000/api/v1/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/orders`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -106,7 +107,7 @@ export const Profile: React.FC = () => {
   const fetchAddresses = async () => {
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/addresses', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -124,7 +125,7 @@ export const Profile: React.FC = () => {
     setAddrPincode(pin);
     if (pin.length === 6) {
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/users/pincode/${pin}`);
+        const res = await fetch(`${API_BASE_URL}/api/v1/users/pincode/${pin}`);
         if (res.ok) {
           const data = await res.json();
           setAddrCity(data.city);
@@ -146,7 +147,7 @@ export const Profile: React.FC = () => {
     if (!token) return;
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/addresses', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +184,7 @@ export const Profile: React.FC = () => {
   const handleDeleteAddress = async (id: string) => {
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/users/me/addresses/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -198,7 +199,7 @@ export const Profile: React.FC = () => {
   const handleSaveProfileName = async () => {
     if (!token || !editName.trim()) return;
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -218,7 +219,7 @@ export const Profile: React.FC = () => {
   const handleBecomeSeller = async () => {
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/become-seller', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/become-seller`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -238,7 +239,7 @@ export const Profile: React.FC = () => {
     setKycError(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/users/me/seller/kyc', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/me/seller/kyc`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
