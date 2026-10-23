@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
@@ -186,3 +187,68 @@ def refresh_token_endpoint(refresh_in: TokenRefreshRequest, db: Session = Depend
         refresh_token=new_refresh_token,
         user=user,
     )
+
+from pydantic import BaseModel
+
+class ResetPasswordPayload(BaseModel):
+    identifier: str
+    new_password: str
+
+@router.post("/reset-password", response_model=UserResponse)
+def reset_password(payload: ResetPasswordPayload, db: Session = Depends(get_db)):
+    ident = payload.identifier.strip().lower()
+    normalized_phone = otp_service.normalize_phone(ident)
+    user = db.query(User).filter(
+        or_(
+            func.lower(User.email) == ident,
+            User.phone_number == normalized_phone,
+            User.phone_number == ident,
+        )
+    ).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    user.hashed_password = hash_password(payload.new_password)
+    db.commit()
+    db.refresh(user)
+    return user
+
+class SyncUserPayload(BaseModel):
+    full_name: str
+    email: str
+    phone_number: Optional[str] = None
+    hashed_password: str
+
+@router.post("/sync-user")
+def sync_user(payload: SyncUserPayload, db: Session = Depends(get_db)):
+    clean_email = payload.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
+    if user:
+        user.hashed_password = payload.hashed_password
+        user.full_name = payload.full_name
+        if payload.phone_number:
+            user.phone_number = payload.phone_number
+        db.commit()
+        return {"status": "updated", "email": clean_email}
+    else:
+        user = User(
+            full_name=payload.full_name,
+            email=clean_email,
+            phone_number=payload.phone_number,
+            hashed_password=payload.hashed_password,
+            role=UserRole.BUYER.value,
+            is_active=True,
+            is_verified=True,
+        )
+        db.add(user)
+        db.commit()
+        return {"status": "created", "email": clean_email}
+
+@router.delete("/delete-user/{email}")
+def delete_user(email: str, db: Session = Depends(get_db)):
+    clean_email = email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
+    if user:
+        db.delete(user)
+        db.commit()
+        return {"message": f"User {clean_email} deleted successfully."}
+    raise HTTPException(status_code=404, detail="User not found.")
