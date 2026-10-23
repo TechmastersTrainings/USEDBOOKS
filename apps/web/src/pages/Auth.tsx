@@ -111,12 +111,16 @@ export const Auth: React.FC = () => {
       if (isRegistering) {
         const payload: any = {
           full_name: fullName.trim(),
-          email: email.trim() || undefined,
+          email: email.trim().toLowerCase() || undefined,
           password: password,
           role: role,
         };
-        if (identifier && /^[6-9]\d{9}$/.test(identifier.trim())) {
-          payload.phone_number = identifier.trim();
+        // Normalize mobile phone if entered
+        if (identifier) {
+          const cleanedPhone = identifier.replace(/[\s\-\+]/g, '').replace(/^91/, '').replace(/^0/, '');
+          if (/^[6-9]\d{9}$/.test(cleanedPhone)) {
+            payload.phone_number = cleanedPhone;
+          }
         }
 
         const res = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
@@ -131,11 +135,16 @@ export const Auth: React.FC = () => {
         login(data.access_token, data.user);
         navigate(redirectUrl);
       } else {
+        const trimmedIdent = identifier.trim();
+        const cleanedIdent = trimmedIdent.includes('@')
+          ? trimmedIdent.toLowerCase()
+          : trimmedIdent.replace(/[\s\-\+]/g, '').replace(/^91/, '').replace(/^0/, '');
+
         const res = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            identifier: identifier.trim(),
+            identifier: cleanedIdent,
             password: password,
           }),
         });
@@ -423,6 +432,9 @@ export const Auth: React.FC = () => {
                   value={isRegistering ? email : identifier}
                   onChange={(e) => isRegistering ? setEmail(e.target.value) : setIdentifier(e.target.value)}
                   required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   style={{ borderRadius: 'var(--radius-sm)' }}
                 />
               </div>
@@ -438,6 +450,9 @@ export const Auth: React.FC = () => {
                     placeholder="10-digit number"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     style={{ borderRadius: 'var(--radius-sm)' }}
                   />
                 </div>

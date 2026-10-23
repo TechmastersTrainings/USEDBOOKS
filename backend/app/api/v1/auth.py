@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from app.api.deps import get_db
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
 from app.core.config import settings
@@ -15,28 +15,29 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserRegister, db: Session = Depends(get_db)):
-    # Check for existing email
-    if user_in.email:
-        existing_email = db.query(User).filter(User.email == user_in.email).first()
+    # Normalize email & phone
+    normalized_email = user_in.email.strip().lower() if user_in.email else None
+    normalized_phone = otp_service.normalize_phone(user_in.phone_number) if user_in.phone_number else None
+
+    # Check for existing email (case-insensitive)
+    if normalized_email:
+        existing_email = db.query(User).filter(func.lower(User.email) == normalized_email).first()
         if existing_email:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already registered.")
 
     # Check for existing phone
-    if user_in.phone_number:
-        normalized_phone = otp_service.normalize_phone(user_in.phone_number)
+    if normalized_phone:
         existing_phone = db.query(User).filter(User.phone_number == normalized_phone).first()
         if existing_phone:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone number is already registered.")
-    else:
-        normalized_phone = None
 
-    if not user_in.email and not normalized_phone:
+    if not normalized_email and not normalized_phone:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Either email or phone number is required.")
 
     # Create user
     new_user = User(
-        full_name=user_in.full_name,
-        email=user_in.email,
+        full_name=user_in.full_name.strip(),
+        email=normalized_email,
         phone_number=normalized_phone,
         hashed_password=hash_password(user_in.password),
         role=user_in.role if user_in.role in [UserRole.BUYER.value, UserRole.SELLER.value] else UserRole.BUYER.value,
@@ -70,20 +71,29 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 def login(login_in: UserLogin, db: Session = Depends(get_db)):
     ident = login_in.identifier.strip()
+    ident_lower = ident.lower()
     normalized_phone = otp_service.normalize_phone(ident)
 
     user = db.query(User).filter(
         or_(
+            func.lower(User.email) == ident_lower,
             User.email == ident,
             User.phone_number == normalized_phone,
             User.phone_number == ident,
         )
     ).first()
 
-    if not user or not user.hashed_password:
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email/phone or password.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.hashed_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This account was registered via Mobile OTP without a password. Please sign in using the Mobile OTP tab.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
