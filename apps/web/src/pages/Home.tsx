@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookCard } from '../components/BookCard';
 import { ArrowRight, Sparkles, BookOpen, GraduationCap, Award, Compass, Cpu } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const Home: React.FC = () => {
   const featuredCategories = [
@@ -58,6 +59,32 @@ export const Home: React.FC = () => {
       coverImageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80'
     }
   ];
+
+  const [featuredBooks, setFeaturedBooks] = useState<any[]>(sampleBooks);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/v1/listings?limit=4`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.items && data.items.length > 0) {
+          const mapped = data.items.map((item: any) => ({
+            id: item.id,
+            title: item.book_catalogue?.title || item.custom_title || 'Untitled',
+            authors: item.book_catalogue?.authors || item.custom_authors || 'Unknown',
+            price: item.asking_price,
+            originalMrp: item.book_catalogue?.original_mrp,
+            conditionGrade: item.condition_grade,
+            sellerCity: 'Bidar',
+            categoryName: item.book_catalogue?.category_id ? 'Textbook' : 'Verified',
+            coverImageUrl: item.images?.[0]?.image_url || item.book_catalogue?.cover_image_url || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
+          }));
+          setFeaturedBooks(mapped);
+        }
+      })
+      .catch(() => {
+        // Fallback to sampleBooks
+      });
+  }, []);
 
   return (
     <div>
@@ -223,7 +250,7 @@ export const Home: React.FC = () => {
         </div>
 
         <div className="books-responsive-grid">
-          {sampleBooks.map(book => (
+          {featuredBooks.map(book => (
             <BookCard key={book.id} {...book} />
           ))}
         </div>

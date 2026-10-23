@@ -172,13 +172,79 @@ def seed_sample_marketplace_data(db: Session):
         db.add(listing2)
         db.flush()
 
-        img2 = ListingImage(
-            listing_id=listing2.id,
-            image_url="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80",
-            is_primary=True,
-            caption="Actual Copy Front Cover"
-        )
-        db.add(img2)
+    # 5. Ensure deterministic sample listings 1-4 exist for fallback and storefront demo
+    sample_catalog_records = [
+        {
+            'id': '1',
+            'seller_id': seller2.id,
+            'book_catalogue_id': book1.id if book1 else None,
+            'custom_title': 'Indian Polity for Civil Services',
+            'custom_authors': 'M. Laxmikanth',
+            'asking_price': 380.0,
+            'condition_grade': ConditionGrade.VERY_GOOD.value,
+            'pickup_address_id': addr2.id if addr2 else addr1.id,
+            'img': 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+            'id': '2',
+            'seller_id': seller1.id,
+            'book_catalogue_id': book2.id if book2 else None,
+            'custom_title': 'Higher Engineering Mathematics',
+            'custom_authors': 'Dr. B.S. Grewal',
+            'asking_price': 420.0,
+            'condition_grade': ConditionGrade.LIKE_NEW.value,
+            'pickup_address_id': addr1.id,
+            'img': 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+            'id': '3',
+            'seller_id': seller1.id,
+            'book_catalogue_id': None,
+            'custom_title': 'Atomic Habits',
+            'custom_authors': 'James Clear',
+            'asking_price': 260.0,
+            'condition_grade': ConditionGrade.GOOD.value,
+            'pickup_address_id': addr1.id,
+            'img': 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80'
+        },
+        {
+            'id': '4',
+            'seller_id': seller2.id,
+            'book_catalogue_id': None,
+            'custom_title': 'Karvalo & Other Stories (Kannada)',
+            'custom_authors': 'K.P. Poornachandra Tejaswi',
+            'asking_price': 180.0,
+            'condition_grade': ConditionGrade.VERY_GOOD.value,
+            'pickup_address_id': addr2.id if addr2 else addr1.id,
+            'img': 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80'
+        }
+    ]
+
+    for item in sample_catalog_records:
+        existing = db.query(Listing).filter(Listing.id == item['id']).first()
+        if not existing:
+            l = Listing(
+                id=item['id'],
+                seller_id=item['seller_id'],
+                book_catalogue_id=item['book_catalogue_id'],
+                custom_title=item['custom_title'],
+                custom_authors=item['custom_authors'],
+                asking_price=item['asking_price'],
+                condition_grade=item['condition_grade'],
+                missing_pages_defect=False,
+                has_annotations_highlighting=False,
+                pickup_address_id=item['pickup_address_id'],
+                status=ListingStatus.ACTIVE.value
+            )
+            db.add(l)
+            db.flush()
+            img = ListingImage(
+                listing_id=item['id'],
+                image_url=item['img'],
+                is_primary=True,
+                caption='Cover'
+            )
+            db.add(img)
 
     db.commit()
 
