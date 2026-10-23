@@ -48,11 +48,10 @@ export const BookCard: React.FC<BookCardProps> = ({
     : null;
 
   return (
-    <Link to={`/book/${id}`} className="card card-hover" style={{
+    <Link to={`/book/${id}`} className="card card-hover book-card" style={{
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      padding: 'var(--space-4)',
       textDecoration: 'none',
       color: 'inherit'
     }}>

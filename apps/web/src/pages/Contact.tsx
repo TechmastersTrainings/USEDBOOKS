@@ -21,8 +21,8 @@ export const Contact: React.FC = () => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: 'var(--space-8)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+        gap: 'var(--space-6)',
         alignItems: 'start'
       }}>
         {/* Contact Info Card */}

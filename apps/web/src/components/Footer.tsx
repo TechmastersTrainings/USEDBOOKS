@@ -7,19 +7,19 @@ export const Footer: React.FC = () => {
     <footer style={{
       backgroundColor: 'var(--bg-surface)',
       borderTop: '1px solid var(--border-subtle)',
-      marginTop: 'var(--space-16)',
-      paddingTop: 'var(--space-12)',
-      paddingBottom: 'var(--space-8)'
+      marginTop: 'var(--space-12)',
+      paddingTop: 'var(--space-10)',
+      paddingBottom: 'calc(var(--space-10) + 40px)'
     }}>
       <div className="container">
         {/* Value Propositions */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 'var(--space-6)',
-          paddingBottom: 'var(--space-10)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 'var(--space-5)',
+          paddingBottom: 'var(--space-8)',
           borderBottom: '1px solid var(--border-subtle)',
-          marginBottom: 'var(--space-10)'
+          marginBottom: 'var(--space-8)'
         }}>
           <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'flex-start' }}>
             <div style={{ color: 'var(--color-primary)' }}><ShieldCheck size={24} /></div>

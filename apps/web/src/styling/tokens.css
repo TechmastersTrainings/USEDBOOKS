@@ -259,13 +259,19 @@ a {
 .input-field {
   width: 100%;
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
+  font-size: 1rem; /* 16px to prevent iOS Safari auto-zoom on mobile */
   padding: 0.625rem 0.875rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-surface);
   color: var(--text-primary);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+@media (min-width: 768px) {
+  .input-field {
+    font-size: var(--text-sm);
+  }
 }
 
 .input-field:focus {
@@ -286,3 +292,181 @@ a {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ============================================================
+   Mobile Responsiveness & Adaptive Utilities
+   ============================================================ */
+
+/* Touch target enhancement */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Responsive display classes */
+.hide-on-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: initial !important;
+  }
+}
+
+.show-on-mobile {
+  display: initial !important;
+}
+
+@media (min-width: 768px) {
+  .show-on-mobile {
+    display: none !important;
+  }
+}
+
+.flex-show-on-mobile {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .flex-show-on-mobile {
+    display: none !important;
+  }
+}
+
+.flex-hide-on-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .flex-hide-on-mobile {
+    display: flex !important;
+  }
+}
+
+/* Fluid responsive typography on smaller screens */
+@media (max-width: 767px) {
+  :root {
+    --text-4xl: 1.75rem;    /* 28px instead of 36px */
+    --text-3xl: 1.5rem;     /* 24px instead of 30px */
+    --text-2xl: 1.25rem;    /* 20px instead of 24px */
+    --text-xl: 1.125rem;    /* 18px instead of 20px */
+    --space-16: 2.5rem;     /* tighter vertical rhythm on mobile */
+    --space-12: 2rem;
+    --space-10: 1.75rem;
+    --space-8: 1.5rem;
+  }
+
+  body {
+    padding-bottom: 68px; /* space for mobile bottom navigation bar */
+  }
+
+  .container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
+/* Responsive Grid Helpers */
+.responsive-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .responsive-two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* 2-column mobile, multi-column desktop book grid */
+.books-responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .books-responsive-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .books-responsive-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+/* Category cards grid */
+.category-responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .category-responsive-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+  }
+}
+
+/* Book card adaptive styles */
+.book-card {
+  padding: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .book-card {
+    padding: var(--space-4);
+  }
+}
+
+
+/* Bottom safe-area spacing for modern mobile devices */
+.safe-bottom {
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+/* Smooth mobile modal drawer animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+

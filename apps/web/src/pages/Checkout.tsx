@@ -232,7 +232,7 @@ export const Checkout: React.FC = () => {
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 'var(--space-6)' }}>
           {/* Left Column: Address & Payment Selection */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
             {/* Step 1: Delivery Address */}
@@ -240,13 +240,13 @@ export const Checkout: React.FC = () => {
               backgroundColor: 'var(--bg-surface)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-md)',
-              padding: 'var(--space-5)',
+              padding: 'var(--space-4)',
               boxShadow: 'var(--shadow-sm)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                   <MapPin size={20} color="var(--color-primary)" />
-                  <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, margin: 0 }}>
+                  <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, margin: 0 }}>
                     1. Delivery Address
                   </h2>
                 </div>
@@ -265,7 +265,7 @@ export const Checkout: React.FC = () => {
                 <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>Loading address book...</p>
               ) : showNewAddressForm ? (
                 <form onSubmit={handleCreateAddress} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                  <div className="responsive-two-col">
                     <div>
                       <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>Full Name *</label>
                       <input
@@ -275,7 +275,7 @@ export const Checkout: React.FC = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Recipient Name"
                         className="input-field"
-                        style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                        style={{ padding: '8px' }}
                       />
                     </div>
                     <div>
@@ -287,7 +287,7 @@ export const Checkout: React.FC = () => {
                         onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                         placeholder="10-digit mobile"
                         className="input-field"
-                        style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                        style={{ padding: '8px' }}
                       />
                     </div>
                   </div>
@@ -301,11 +301,11 @@ export const Checkout: React.FC = () => {
                       onChange={(e) => setAddressLine1(e.target.value)}
                       placeholder="e.g. Flat 302, Sai Residency, Near Gandhi Circle"
                       className="input-field"
-                      style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                      style={{ padding: '8px' }}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                  <div className="responsive-two-col">
                     <div>
                       <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>Area / Colony</label>
                       <input
@@ -314,7 +314,7 @@ export const Checkout: React.FC = () => {
                         onChange={(e) => setAddressLine2(e.target.value)}
                         placeholder="e.g. Mailoor / Gumpa"
                         className="input-field"
-                        style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                        style={{ padding: '8px' }}
                       />
                     </div>
                     <div>
@@ -325,7 +325,7 @@ export const Checkout: React.FC = () => {
                         onChange={(e) => setLandmark(e.target.value)}
                         placeholder="e.g. Near Gurudwara Gate"
                         className="input-field"
-                        style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                        style={{ padding: '8px' }}
                       />
                     </div>
                   </div>
@@ -339,11 +339,11 @@ export const Checkout: React.FC = () => {
                       onChange={(e) => handlePincodeLookup(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       placeholder="e.g. 585401"
                       className="input-field"
-                      style={{ fontSize: 'var(--text-xs)', padding: '8px' }}
+                      style={{ padding: '8px' }}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                  <div className="responsive-two-col">
                     <div>
                       <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>City</label>
                       <input

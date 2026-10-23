@@ -72,8 +72,8 @@ export const Home: React.FC = () => {
       }}>
         <div className="container" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 'var(--space-10)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+          gap: 'var(--space-8)',
           alignItems: 'center'
         }}>
           <div>
@@ -103,7 +103,7 @@ export const Home: React.FC = () => {
             </h1>
 
             <p style={{
-              fontSize: 'var(--text-lg)',
+              fontSize: 'var(--text-base)',
               color: 'var(--text-secondary)',
               marginBottom: 'var(--space-6)',
               lineHeight: 1.6
@@ -112,11 +112,11 @@ export const Home: React.FC = () => {
             </p>
 
             <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-              <Link to="/explore" className="btn btn-primary" style={{ padding: '0.75rem 1.75rem', fontSize: 'var(--text-base)' }}>
+              <Link to="/explore" className="btn btn-primary" style={{ padding: '0.75rem 1.5rem', fontSize: 'var(--text-sm)' }}>
                 Find Books in Bidar
                 <ArrowRight size={18} />
               </Link>
-              <Link to="/sell" className="btn btn-secondary" style={{ padding: '0.75rem 1.75rem', fontSize: 'var(--text-base)' }}>
+              <Link to="/sell" className="btn btn-secondary" style={{ padding: '0.75rem 1.5rem', fontSize: 'var(--text-sm)' }}>
                 Sell Your Books
               </Link>
             </div>
@@ -127,12 +127,13 @@ export const Home: React.FC = () => {
             position: 'relative',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            width: '100%'
           }}>
             <div className="card" style={{
               width: '100%',
               maxWidth: '380px',
-              padding: 'var(--space-6)',
+              padding: 'var(--space-5)',
               boxShadow: 'var(--shadow-lg)',
               backgroundColor: 'var(--bg-surface)',
               position: 'relative',
@@ -142,7 +143,7 @@ export const Home: React.FC = () => {
                 <span className="badge badge-like-new">Verified Copy</span>
                 <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Seller: Rahul M. • Bidar</span>
               </div>
-              <h3 style={{ fontSize: 'var(--text-xl)', marginBottom: 'var(--space-2)' }}>
+              <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>
                 General Studies Manual 2025
               </h3>
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
@@ -150,7 +151,7 @@ export const Home: React.FC = () => {
               </p>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-subtle)' }}>
                 <div>
-                  <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--text-primary)' }}>₹450</div>
+                  <div style={{ fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--text-primary)' }}>₹450</div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textDecoration: 'line-through' }}>MRP ₹1,299 (65% OFF)</div>
                 </div>
                 <Link to="/explore" className="btn btn-accent">
@@ -163,47 +164,43 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Popular Categories Grid */}
-      <section className="container" style={{ padding: 'var(--space-12) 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 'var(--space-6)' }}>
+      <section className="container" style={{ padding: 'var(--space-10) var(--space-4)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
           <div>
-            <h2 style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)' }}>Popular in Bidar</h2>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '2px' }}>Popular in Bidar</h2>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
               Explore academic textbooks, competitive exam guides, and regional literature.
             </p>
           </div>
-          <Link to="/explore" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-primary)' }}>
-            <span>View All Categories</span>
-            <ArrowRight size={16} />
+          <Link to="/explore" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-primary)' }}>
+            <span>View All</span>
+            <ArrowRight size={14} />
           </Link>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 'var(--space-4)'
-        }}>
+        <div className="category-responsive-grid">
           {featuredCategories.map((cat, i) => (
             <Link key={i} to={`/explore?category=${cat.slug}`} className="card card-hover" style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              padding: 'var(--space-5)',
+              padding: 'var(--space-4)',
               color: 'inherit'
             }}>
               <div style={{
-                width: '44px',
-                height: '44px',
+                width: '38px',
+                height: '38px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--color-primary-subtle)',
                 color: 'var(--color-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 'var(--space-3)'
+                marginBottom: 'var(--space-2)'
               }}>
                 {cat.icon}
               </div>
-              <h4 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-1)' }}>{cat.name}</h4>
+              <h4 style={{ fontSize: 'var(--text-sm)', marginBottom: '2px' }}>{cat.name}</h4>
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>{cat.count}</span>
             </Link>
           ))}
@@ -211,25 +208,21 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Recent Listings Shelf */}
-      <section className="container" style={{ paddingBottom: 'var(--space-16)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 'var(--space-6)' }}>
+      <section className="container" style={{ paddingBottom: 'var(--space-12)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
           <div>
-            <h2 style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-1)' }}>Recently Listed Books</h2>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+            <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: '2px' }}>Recently Listed Books</h2>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
               Genuine copies listed by readers in Bidar (585401 / 585403).
             </p>
           </div>
-          <Link to="/explore" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-primary)' }}>
+          <Link to="/explore" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-primary)' }}>
             <span>Browse More</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={14} />
           </Link>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: 'var(--space-5)'
-        }}>
+        <div className="books-responsive-grid">
           {sampleBooks.map(book => (
             <BookCard key={book.id} {...book} />
           ))}

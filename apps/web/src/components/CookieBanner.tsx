@@ -47,18 +47,18 @@ export const CookieBanner: React.FC = () => {
         </p>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
         <button
           onClick={() => handleAccept('essential')}
           className="btn btn-secondary"
-          style={{ padding: '0.4rem 0.875rem', fontSize: 'var(--text-xs)' }}
+          style={{ flex: '1 1 120px', padding: '0.5rem 0.875rem', fontSize: 'var(--text-xs)' }}
         >
           Essential Only
         </button>
         <button
           onClick={() => handleAccept('all')}
           className="btn btn-primary"
-          style={{ padding: '0.4rem 1rem', fontSize: 'var(--text-xs)' }}
+          style={{ flex: '1 1 120px', padding: '0.5rem 1rem', fontSize: 'var(--text-xs)' }}
         >
           Accept All
         </button>

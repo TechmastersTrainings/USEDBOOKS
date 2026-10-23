@@ -289,6 +289,8 @@ export const Auth: React.FC = () => {
                       </div>
                       <input
                         type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
                         className="input-field"
                         placeholder="10-digit number (e.g. 9876543210)"
                         value={phone}
@@ -320,10 +322,12 @@ export const Auth: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
                       className="input-field"
                       placeholder="6-digit OTP (e.g. 123456)"
                       value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.slice(0, 6))}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       required
                       style={{
                         borderRadius: 'var(--radius-sm)',

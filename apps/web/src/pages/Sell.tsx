@@ -308,13 +308,13 @@ export const Sell: React.FC = () => {
   }
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-canvas)', minHeight: 'calc(100vh - 72px)', padding: 'var(--space-8) 0' }}>
+    <div style={{ backgroundColor: 'var(--bg-canvas)', minHeight: 'calc(100vh - 72px)', padding: 'var(--space-6) 0' }}>
       <div className="container" style={{ maxWidth: '780px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
-          <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, marginBottom: 'var(--space-2)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
+          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, marginBottom: 'var(--space-2)' }}>
             List a Book for Sale
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
             Doorstep courier pickup from your address in Bidar with direct bank/UPI escrow payout.
           </p>
         </div>
@@ -323,33 +323,38 @@ export const Sell: React.FC = () => {
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginBottom: 'var(--space-6)',
+          marginBottom: 'var(--space-5)',
           backgroundColor: 'var(--bg-surface)',
-          padding: 'var(--space-3) var(--space-6)',
+          padding: 'var(--space-3) var(--space-4)',
           borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--border-subtle)'
+          border: '1px solid var(--border-subtle)',
+          gap: 'var(--space-2)'
         }}>
           {[
-            { num: 1, label: 'Book Details' },
-            { num: 2, label: 'Photos & Condition' },
-            { num: 3, label: 'Price & Pickup' },
+            { num: 1, label: 'Details', fullLabel: 'Book Details' },
+            { num: 2, label: 'Condition', fullLabel: 'Photos & Condition' },
+            { num: 3, label: 'Pickup', fullLabel: 'Price & Pickup' },
           ].map((s) => (
-            <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{
-                width: '28px',
-                height: '28px',
+                width: '26px',
+                height: '26px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: step >= s.num ? 'var(--color-primary)' : 'var(--bg-subtle)',
                 color: step >= s.num ? 'var(--text-inverse)' : 'var(--text-muted)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 'var(--text-xs)',
-                fontWeight: 700
+                fontSize: '11px',
+                fontWeight: 700,
+                flexShrink: 0
               }}>
                 {s.num}
               </div>
-              <span style={{ fontSize: 'var(--text-xs)', fontWeight: step === s.num ? 700 : 500, color: step === s.num ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+              <span className="hide-on-mobile" style={{ fontSize: 'var(--text-xs)', fontWeight: step === s.num ? 700 : 500, color: step === s.num ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                {s.fullLabel}
+              </span>
+              <span className="show-on-mobile" style={{ fontSize: 'var(--text-xs)', fontWeight: step === s.num ? 700 : 500, color: step === s.num ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                 {s.label}
               </span>
             </div>
@@ -378,7 +383,7 @@ export const Sell: React.FC = () => {
           backgroundColor: 'var(--bg-surface)',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border-subtle)',
-          padding: 'var(--space-6)',
+          padding: 'var(--space-5)',
           boxShadow: 'var(--shadow-sm)'
         }}>
           {/* STEP 1: ISBN LOOKUP & TITLE */}
@@ -413,7 +418,7 @@ export const Sell: React.FC = () => {
                     onClick={handleIsbnSearch}
                     disabled={searchingIsbn || !isbnQuery.trim()}
                     className="btn btn-primary"
-                    style={{ borderRadius: 'var(--radius-sm)' }}
+                    style={{ borderRadius: 'var(--radius-sm)', whiteSpace: 'nowrap' }}
                   >
                     <Search size={16} />
                     <span>{searchingIsbn ? 'Looking up...' : 'Lookup'}</span>
@@ -457,7 +462,7 @@ export const Sell: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+              <div className="responsive-two-col" style={{ marginBottom: 'var(--space-6)' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
                     Publisher (Optional)

@@ -308,7 +308,7 @@ export const OrderDetails: React.FC = () => {
             </div>
           ) : (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-5)', flexWrap: 'wrap', gap: '8px' }}>
                 <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, margin: 0 }}>
                   Live Delivery & Escrow Progress
                 </h2>
@@ -365,7 +365,7 @@ export const OrderDetails: React.FC = () => {
         </div>
 
         {/* 2-Column Info: Items & Delivery Address */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 'var(--space-6)' }}>
           {/* Items in this Order */}
           <div style={{
             backgroundColor: 'var(--bg-surface)',

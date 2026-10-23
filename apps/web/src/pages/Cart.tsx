@@ -73,8 +73,8 @@ export const Cart: React.FC = () => {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 'var(--space-8)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+          gap: 'var(--space-6)',
           alignItems: 'start'
         }}>
           {/* Cart Items List */}
@@ -86,16 +86,16 @@ export const Cart: React.FC = () => {
                   backgroundColor: 'var(--bg-surface)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-md)',
-                  padding: 'var(--space-4)',
+                  padding: 'var(--space-3)',
                   display: 'flex',
-                  gap: 'var(--space-4)',
+                  gap: 'var(--space-3)',
                   boxShadow: 'var(--shadow-sm)'
                 }}
               >
                 {/* Book Thumbnail */}
                 <div style={{
-                  width: '80px',
-                  height: '110px',
+                  width: '70px',
+                  height: '98px',
                   backgroundColor: 'var(--bg-subtle)',
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
@@ -109,11 +109,20 @@ export const Cart: React.FC = () => {
                 </div>
 
                 {/* Book Details */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <Link to={`/book/${item.listingId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, margin: '0 0 4px 0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '4px' }}>
+                      <Link to={`/book/${item.listingId}`} style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
+                        <h2 style={{
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 700,
+                          margin: '0 0 2px 0',
+                          lineHeight: 1.3,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
                           {item.title}
                         </h2>
                       </Link>

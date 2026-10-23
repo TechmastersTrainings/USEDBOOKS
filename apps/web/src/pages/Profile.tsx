@@ -339,7 +339,7 @@ export const Profile: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-4)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginTop: '4px' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-3)', color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', marginTop: '4px', flexWrap: 'wrap' }}>
                   {user.email && <span>{user.email}</span>}
                   {user.phone_number && <span>+91 {user.phone_number}</span>}
                   <span style={{ textTransform: 'capitalize', fontWeight: 600 }}>Role: {user.role}</span>
@@ -689,7 +689,7 @@ export const Profile: React.FC = () => {
                 Add Delivery / Pickup Address
               </h2>
               <form onSubmit={handleCreateAddress}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+                <div className="responsive-two-col" style={{ marginBottom: 'var(--space-3)' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>
                       Contact Name
@@ -735,7 +735,7 @@ export const Profile: React.FC = () => {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+                <div className="responsive-two-col" style={{ marginBottom: 'var(--space-3)' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>
                       Locality / Colony
@@ -764,7 +764,7 @@ export const Profile: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+                <div className="responsive-two-col" style={{ marginBottom: 'var(--space-3)' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>
                       6-Digit PIN Code
@@ -781,26 +781,17 @@ export const Profile: React.FC = () => {
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>
-                      City
+                      City & State
                     </label>
                     <input
                       type="text"
                       className="input-field"
-                      value={addrCity}
-                      onChange={(e) => setAddrCity(e.target.value)}
-                      required
-                      style={{ borderRadius: 'var(--radius-sm)' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 'var(--text-xs)', fontWeight: 600, marginBottom: '4px' }}>
-                      State
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      value={addrState}
-                      onChange={(e) => setAddrState(e.target.value)}
+                      value={`${addrCity}, ${addrState}`}
+                      onChange={(e) => {
+                        const parts = e.target.value.split(',');
+                        setAddrCity(parts[0]?.trim() || '');
+                        if (parts[1]) setAddrState(parts[1].trim());
+                      }}
                       required
                       style={{ borderRadius: 'var(--radius-sm)' }}
                     />

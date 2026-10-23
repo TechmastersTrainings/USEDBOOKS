@@ -169,8 +169,8 @@ export const BookDetails: React.FC = () => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: 'var(--space-10)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+        gap: 'var(--space-8)',
         alignItems: 'start'
       }}>
         {/* Photo Gallery */}
@@ -180,8 +180,9 @@ export const BookDetails: React.FC = () => {
             overflow: 'hidden',
             backgroundColor: 'var(--bg-subtle)',
             aspectRatio: '3/4',
+            maxHeight: '440px',
             boxShadow: 'var(--shadow-md)',
-            marginBottom: 'var(--space-4)',
+            marginBottom: 'var(--space-3)',
             border: '1px solid var(--border-subtle)'
           }}>
             <img
@@ -193,15 +194,16 @@ export const BookDetails: React.FC = () => {
 
           {/* Thumbnails */}
           {photos.length > 1 && (
-            <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', overflowX: 'auto', paddingBottom: '4px' }}>
               {photos.map((url, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setSelectedPhotoIndex(idx)}
                   style={{
-                    width: '68px',
-                    height: '68px',
+                    width: '60px',
+                    height: '60px',
+                    flexShrink: 0,
                     borderRadius: 'var(--radius-sm)',
                     border: selectedPhotoIndex === idx ? '2px solid var(--color-primary)' : '1px solid var(--border-subtle)',
                     overflow: 'hidden',
@@ -219,7 +221,7 @@ export const BookDetails: React.FC = () => {
 
         {/* Book Details & Buy Box */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)', flexWrap: 'wrap' }}>
             <span style={{
               textTransform: 'capitalize',
               fontSize: 'var(--text-xs)',
@@ -236,11 +238,11 @@ export const BookDetails: React.FC = () => {
             </span>
           </div>
 
-          <h1 style={{ fontSize: 'var(--text-3xl)', lineHeight: 1.25, fontWeight: 700, marginBottom: 'var(--space-2)' }}>
+          <h1 style={{ fontSize: 'var(--text-2xl)', lineHeight: 1.25, fontWeight: 700, marginBottom: 'var(--space-2)' }}>
             {title}
           </h1>
 
-          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
             By <strong>{authors}</strong> {publisher && `• Published by ${publisher}`}
           </p>
 
@@ -249,10 +251,10 @@ export const BookDetails: React.FC = () => {
             backgroundColor: 'var(--bg-subtle)',
             borderRadius: 'var(--radius-md)',
             padding: 'var(--space-4)',
-            marginBottom: 'var(--space-6)',
+            marginBottom: 'var(--space-5)',
             border: '1px solid var(--border-subtle)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)', marginBottom: 'var(--space-2)', flexWrap: 'wrap' }}>
               <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--color-primary)' }}>
                 ₹{askingPrice}
               </span>
@@ -285,7 +287,7 @@ export const BookDetails: React.FC = () => {
             border: '1px solid var(--border-subtle)',
             borderRadius: 'var(--radius-md)',
             padding: 'var(--space-4)',
-            marginBottom: 'var(--space-6)'
+            marginBottom: 'var(--space-5)'
           }}>
             <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, margin: '0 0 var(--space-3) 0' }}>
               Physical Condition & Defects
@@ -336,7 +338,9 @@ export const BookDetails: React.FC = () => {
             backgroundColor: 'var(--bg-surface)',
             borderRadius: 'var(--radius-md)',
             border: '1px solid var(--border-subtle)',
-            marginBottom: 'var(--space-6)'
+            marginBottom: 'var(--space-5)',
+            flexWrap: 'wrap',
+            gap: 'var(--space-2)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <MapPin size={16} color="var(--color-primary)" />
@@ -380,13 +384,13 @@ export const BookDetails: React.FC = () => {
             )}
           </form>
 
-          {/* Purchase Actions */}
-          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+          {/* Desktop Purchase Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={handleBuyNow}
               className="btn btn-primary"
-              style={{ flex: 1, borderRadius: 'var(--radius-sm)', padding: '12px', justifyContent: 'center' }}
+              style={{ flex: 1, minWidth: '160px', borderRadius: 'var(--radius-sm)', padding: '12px', justifyContent: 'center' }}
             >
               <ShoppingBag size={18} />
               <span>Buy This Copy (₹{askingPrice})</span>
@@ -395,7 +399,7 @@ export const BookDetails: React.FC = () => {
               type="button"
               onClick={handleAddToCart}
               className="btn btn-secondary"
-              style={{ borderRadius: 'var(--radius-sm)', padding: '12px 20px' }}
+              style={{ borderRadius: 'var(--radius-sm)', padding: '12px 20px', minWidth: '120px' }}
             >
               Add to Cart
             </button>
@@ -412,6 +416,55 @@ export const BookDetails: React.FC = () => {
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Sticky Bottom Action Bar on Mobile */}
+      <div
+        className="show-on-mobile"
+        style={{
+          position: 'fixed',
+          bottom: '56px', /* above bottom navigation bar */
+          left: 0,
+          right: 0,
+          zIndex: 85,
+          backgroundColor: 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderTop: '1px solid var(--border-subtle)',
+          padding: '8px 16px',
+          boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.08)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+          <div>
+            <div style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-primary)', lineHeight: 1 }}>
+              ₹{askingPrice}
+            </div>
+            {originalMrp > askingPrice && (
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
+                MRP ₹{originalMrp}
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flex: 1, justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="btn btn-secondary"
+              style={{ padding: '8px 12px', fontSize: 'var(--text-xs)', borderRadius: 'var(--radius-md)' }}
+            >
+              Cart
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className="btn btn-primary"
+              style={{ padding: '8px 16px', fontSize: 'var(--text-xs)', borderRadius: 'var(--radius-md)', fontWeight: 600 }}
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
     </div>
