@@ -90,8 +90,9 @@ export const Auth: React.FC = () => {
       if (!res.ok) {
         throw new Error(data.detail || 'Incorrect or expired OTP.');
       }
+      const redirectUrl = searchParams.get('redirect') || '/profile';
       login(data.access_token, data.user);
-      navigate('/profile');
+      navigate(redirectUrl);
     } catch (err: any) {
       setError(err.message || 'OTP verification failed.');
     } finally {
@@ -103,6 +104,8 @@ export const Auth: React.FC = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const redirectUrl = searchParams.get('redirect') || '/profile';
 
     try {
       if (isRegistering) {
@@ -126,7 +129,7 @@ export const Auth: React.FC = () => {
           throw new Error(data.detail || 'Registration failed.');
         }
         login(data.access_token, data.user);
-        navigate('/profile');
+        navigate(redirectUrl);
       } else {
         const res = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
           method: 'POST',
@@ -141,7 +144,7 @@ export const Auth: React.FC = () => {
           throw new Error(data.detail || 'Invalid email/phone or password.');
         }
         login(data.access_token, data.user);
-        navigate('/profile');
+        navigate(redirectUrl);
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed.');

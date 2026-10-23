@@ -82,20 +82,83 @@ export const BookDetails: React.FC = () => {
     }
   };
 
+  const SAMPLE_CATALOG: Record<string, any> = {
+    '1': {
+      title: 'Indian Polity for Civil Services (6th Edition)',
+      authors: 'M. Laxmikanth',
+      publisher: 'McGraw Hill India',
+      isbn: '9789389538472',
+      askingPrice: 380,
+      originalMrp: 850,
+      conditionGrade: 'very_good',
+      description: 'Comprehensive foundational text on the Constitution of India, fundamental rights, and civil administrative institutions. Ideal for UPSC & KPSC.',
+      coverImageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80'
+    },
+    '2': {
+      title: 'Higher Engineering Mathematics',
+      authors: 'Dr. B.S. Grewal',
+      publisher: 'Khanna Publishers',
+      isbn: '9788174091955',
+      askingPrice: 420,
+      originalMrp: 995,
+      conditionGrade: 'like_new',
+      description: 'Standard engineering mathematics textbook covering calculus, linear algebra, vector analysis, and differential equations.',
+      coverImageUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=900&auto=format&fit=crop&q=80'
+    },
+    '3': {
+      title: 'Atomic Habits',
+      authors: 'James Clear',
+      publisher: 'Random House Business',
+      isbn: '9781847941831',
+      askingPrice: 260,
+      originalMrp: 599,
+      conditionGrade: 'good',
+      description: 'An easy & proven way to build good habits and break bad ones. Insights on behavioral psychology and self-improvement.',
+      coverImageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80'
+    },
+    '4': {
+      title: 'Karvalo & Other Stories (Kannada)',
+      authors: 'K.P. Poornachandra Tejaswi',
+      publisher: 'Pustaka Prakashana',
+      isbn: '9788193328491',
+      askingPrice: 180,
+      originalMrp: 350,
+      conditionGrade: 'very_good',
+      description: 'Acclaimed modern Kannada classic exploring scientific curiosity, Western Ghats biodiversity, and human observation.',
+      coverImageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=900&auto=format&fit=crop&q=80'
+    }
+  };
+
+  const fallback = (id && SAMPLE_CATALOG[id]) || SAMPLE_CATALOG['1'];
+
+  const title = listing?.book_catalogue?.title || listing?.custom_title || fallback.title;
+  const authors = listing?.book_catalogue?.authors || listing?.custom_authors || fallback.authors;
+  const publisher = listing?.book_catalogue?.publisher || fallback.publisher;
+  const isbn = listing?.book_catalogue?.isbn_13 || fallback.isbn;
+  const askingPrice = listing?.asking_price ?? fallback.askingPrice;
+  const originalMrp = listing?.book_catalogue?.original_mrp ?? fallback.originalMrp;
+  const condition = listing?.condition_grade || fallback.conditionGrade;
+  const description = listing?.book_catalogue?.description || fallback.description;
+
+  const photos = listing?.images && listing.images.length > 0
+    ? listing.images.map(img => img.image_url)
+    : [
+        fallback.coverImageUrl,
+        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80',
+      ];
+
   const handleAddToCart = () => {
-    if (!listing) return;
-    const title = listing.book_catalogue?.title || listing.custom_title || 'Used Book';
-    const authors = listing.book_catalogue?.authors || listing.custom_authors || 'Independent Author';
-    const primaryImg = listing.images.find(img => img.is_primary)?.image_url || listing.book_catalogue?.cover_image_url;
+    const primaryImg = listing?.images?.find(img => img.is_primary)?.image_url || listing?.book_catalogue?.cover_image_url || fallback.coverImageUrl;
 
     addToCart({
-      listingId: listing.id,
+      listingId: listing?.id || id || 'book-1',
       title,
       authors,
-      askingPrice: listing.asking_price,
-      conditionGrade: listing.condition_grade,
+      askingPrice,
+      conditionGrade: condition,
       coverImage: primaryImg,
-      missingPagesDefect: listing.missing_pages_defect,
+      missingPagesDefect: listing?.missing_pages_defect || false,
     });
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 3000);
@@ -113,24 +176,6 @@ export const BookDetails: React.FC = () => {
       </div>
     );
   }
-
-  // Fallback data if listing ID not found in database
-  const title = listing?.book_catalogue?.title || listing?.custom_title || 'Indian Polity for Civil Services (6th Edition)';
-  const authors = listing?.book_catalogue?.authors || listing?.custom_authors || 'M. Laxmikanth';
-  const publisher = listing?.book_catalogue?.publisher || 'McGraw Hill India';
-  const isbn = listing?.book_catalogue?.isbn_13 || '9789389538472';
-  const askingPrice = listing?.asking_price || 380;
-  const originalMrp = listing?.book_catalogue?.original_mrp || 850;
-  const condition = listing?.condition_grade || 'very_good';
-  const description = listing?.book_catalogue?.description || 'Comprehensive foundational text on the Constitution of India, fundamental rights, and civil administrative institutions.';
-
-  const photos = listing?.images && listing.images.length > 0
-    ? listing.images.map(img => img.image_url)
-    : [
-        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=900&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80',
-      ];
 
   const savingsPercent = originalMrp ? Math.round(((originalMrp - askingPrice) / originalMrp) * 100) : 0;
 
