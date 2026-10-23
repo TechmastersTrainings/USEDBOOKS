@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class AddressBase(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=100)
-    phone_number: str = Field(..., pattern=r"^(\+91)?[6-9]\d{9}$")
+    phone_number: str = Field(..., pattern=r"^(\+91|0)?[6-9]\d{9}$")
     address_line1: str = Field(..., min_length=5, max_length=255)
     address_line2: Optional[str] = Field(None, max_length=255)
     landmark: Optional[str] = Field(None, max_length=150)
@@ -19,7 +19,7 @@ class AddressCreate(AddressBase):
 
 class AddressUpdate(BaseModel):
     full_name: Optional[str] = Field(None, min_length=2, max_length=100)
-    phone_number: Optional[str] = Field(None, pattern=r"^(\+91)?[6-9]\d{9}$")
+    phone_number: Optional[str] = Field(None, pattern=r"^(\+91|0)?[6-9]\d{9}$")
     address_line1: Optional[str] = Field(None, min_length=5, max_length=255)
     address_line2: Optional[str] = None
     landmark: Optional[str] = None

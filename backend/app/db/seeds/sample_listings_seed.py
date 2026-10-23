@@ -109,7 +109,7 @@ def seed_sample_marketplace_data(db: Session):
         shiva_addr = Address(
             user_id=shiva.id,
             full_name="shiva bhalke",
-            phone_number="09108950128",
+            phone_number="9108950128",
             address_line1="BIDAR",
             address_line2="Laderi",
             landmark="laxmi nivas",
