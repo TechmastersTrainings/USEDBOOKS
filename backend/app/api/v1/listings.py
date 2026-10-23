@@ -1,13 +1,19 @@
 from typing import Optional, List
-from fastapi import APIRouter, Depends, Query, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+
 from app.core.database import get_db
+from app.api.deps import get_current_user, security
+from app.core.security import decode_token
+from app.models.user import User
 from app.services.listing_service import ListingService
 from app.schemas.listing import (
     ListingCreate,
     ListingResponse,
     PaginatedListingsResponse,
     ListingStatusUpdate,
+    ListingUpdate,
     ListingImageResponse
 )
 
@@ -39,6 +45,15 @@ def list_listings(
     )
     return PaginatedListingsResponse(total=total, page=page, limit=limit, items=items)
 
+@router.get("/listings/me", response_model=List[ListingResponse], tags=["Listings"])
+def list_my_listings(
+    status: Optional[str] = Query(None, description="all, active, sold, paused"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Retrieve all book listings owned by the logged-in seller."""
+    return ListingService.list_seller_listings(db, current_user.id, status)
+
 @router.get("/listings/{listing_id}", response_model=ListingResponse, tags=["Listings"])
 def get_listing(listing_id: str, db: Session = Depends(get_db)):
     """Retrieve detailed listing view including verified photos and condition notes."""
@@ -46,10 +61,6 @@ def get_listing(listing_id: str, db: Session = Depends(get_db)):
     if not listing:
         raise HTTPException(status_code=404, detail="Listing not found")
     return listing
-
-from fastapi.security import HTTPAuthorizationCredentials
-from app.api.deps import get_db, security
-from app.core.security import decode_token
 
 @router.post("/listings", response_model=ListingResponse, status_code=status.HTTP_201_CREATED, tags=["Listings"])
 def create_listing(
@@ -68,26 +79,6 @@ def create_listing(
         actual_seller_id = "dev-seller-id"
 
     return ListingService.create_listing(db, actual_seller_id, payload)
-
-from app.schemas.listing import (
-    ListingCreate,
-    ListingResponse,
-    PaginatedListingsResponse,
-    ListingStatusUpdate,
-    ListingUpdate,
-    ListingImageResponse
-)
-from app.api.deps import get_db, get_current_user, security
-from app.models.user import User
-
-@router.get("/listings/me", response_model=List[ListingResponse], tags=["Listings"])
-def list_my_listings(
-    status: Optional[str] = Query(None, description="all, active, sold, paused"),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Retrieve all book listings owned by the logged-in seller."""
-    return ListingService.list_seller_listings(db, current_user.id, status)
 
 @router.patch("/listings/{listing_id}", response_model=ListingResponse, tags=["Listings"])
 def edit_listing(
