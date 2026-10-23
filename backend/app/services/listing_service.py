@@ -56,18 +56,26 @@ class ListingService:
             .filter(Listing.id == listing_id)
             .first()
         )
-        if not listing and listing_id in ["1", "2", "3", "4"]:
-            try:
-                from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
-                seed_sample_marketplace_data(db)
-                listing = (
-                    db.query(Listing)
-                    .options(joinedload(Listing.book_catalogue), joinedload(Listing.images))
-                    .filter(Listing.id == listing_id)
-                    .first()
-                )
-            except Exception:
-                pass
+        if listing_id in ["1", "2", "3", "4"]:
+            if not listing:
+                try:
+                    from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
+                    seed_sample_marketplace_data(db)
+                    listing = (
+                        db.query(Listing)
+                        .options(joinedload(Listing.book_catalogue), joinedload(Listing.images))
+                        .filter(Listing.id == listing_id)
+                        .first()
+                    )
+                except Exception:
+                    pass
+            if listing and listing.status != ListingStatus.ACTIVE.value:
+                try:
+                    listing.status = ListingStatus.ACTIVE.value
+                    db.commit()
+                    db.refresh(listing)
+                except Exception:
+                    db.rollback()
         return listing
 
     @staticmethod

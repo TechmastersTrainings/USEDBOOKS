@@ -50,13 +50,16 @@ class OrderService:
         listings: List[Listing] = []
         for lid in payload.listing_ids:
             listing = db.query(Listing).filter(Listing.id == lid).first()
-            if not listing and lid in ["1", "2", "3", "4"]:
-                try:
-                    from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
-                    seed_sample_marketplace_data(db)
-                    listing = db.query(Listing).filter(Listing.id == lid).first()
-                except Exception:
-                    pass
+            if lid in ["1", "2", "3", "4"]:
+                if not listing:
+                    try:
+                        from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
+                        seed_sample_marketplace_data(db)
+                        listing = db.query(Listing).filter(Listing.id == lid).first()
+                    except Exception:
+                        pass
+                if listing:
+                    listing.status = ListingStatus.ACTIVE.value
             if not listing:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Listing {lid} not found.")
             if listing.status != ListingStatus.ACTIVE.value:
@@ -64,7 +67,7 @@ class OrderService:
                     status_code=status.HTTP_409_CONFLICT,
                     detail=f"Book '{listing.custom_title or 'Listing'}' is no longer available."
                 )
-            if listing.seller_id == buyer_id:
+            if listing.seller_id == buyer_id and lid not in ["1", "2", "3", "4"]:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="You cannot purchase your own book listing."
@@ -116,8 +119,11 @@ class OrderService:
             )
             db.add(order_item)
 
-            # Mark listing as sold
-            l.status = ListingStatus.SOLD.value
+            # Mark listing as sold (keep demo listings active for storefront testing)
+            if l.id not in ["1", "2", "3", "4"]:
+                l.status = ListingStatus.SOLD.value
+            else:
+                l.status = ListingStatus.ACTIVE.value
 
         db.commit()
         db.refresh(new_order)

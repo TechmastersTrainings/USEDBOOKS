@@ -245,6 +245,8 @@ def seed_sample_marketplace_data(db: Session):
                 caption='Cover'
             )
             db.add(img)
+        else:
+            existing.status = ListingStatus.ACTIVE.value
 
     db.commit()
 
