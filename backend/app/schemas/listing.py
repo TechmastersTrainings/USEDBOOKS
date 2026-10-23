@@ -27,6 +27,11 @@ class ListingCreate(BaseModel):
 class ListingStatusUpdate(BaseModel):
     status: ListingStatus
 
+class ListingUpdate(BaseModel):
+    asking_price: Optional[float] = Field(None, gt=0)
+    status: Optional[str] = None
+    defect_description: Optional[str] = None
+
 class ListingResponse(BaseModel):
     id: str
     seller_id: str

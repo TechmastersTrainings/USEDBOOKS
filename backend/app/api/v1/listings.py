@@ -69,15 +69,52 @@ def create_listing(
 
     return ListingService.create_listing(db, actual_seller_id, payload)
 
-@router.patch("/listings/{listing_id}/status", response_model=ListingResponse, tags=["Listings"])
-def update_listing_status(
-    listing_id: str,
-    payload: ListingStatusUpdate,
-    seller_id: str = Query("dev-seller-id", description="Seller ID context"),
+from app.schemas.listing import (
+    ListingCreate,
+    ListingResponse,
+    PaginatedListingsResponse,
+    ListingStatusUpdate,
+    ListingUpdate,
+    ListingImageResponse
+)
+from app.api.deps import get_db, get_current_user, security
+from app.models.user import User
+
+@router.get("/listings/me", response_model=List[ListingResponse], tags=["Listings"])
+def list_my_listings(
+    status: Optional[str] = Query(None, description="all, active, sold, paused"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Pause, resume, or remove a seller listing."""
-    return ListingService.update_status(db, listing_id, seller_id, payload.status)
+    """Retrieve all book listings owned by the logged-in seller."""
+    return ListingService.list_seller_listings(db, current_user.id, status)
+
+@router.patch("/listings/{listing_id}", response_model=ListingResponse, tags=["Listings"])
+def edit_listing(
+    listing_id: str,
+    payload: ListingUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Edit listing price, defect description, or toggle paused/active status."""
+    return ListingService.update_listing(
+        db,
+        listing_id=listing_id,
+        seller_id=current_user.id,
+        asking_price=payload.asking_price,
+        status=payload.status,
+        defect_description=payload.defect_description
+    )
+
+@router.delete("/listings/{listing_id}", tags=["Listings"])
+def delete_my_listing(
+    listing_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Permanently delete a seller listing."""
+    ListingService.delete_listing(db, listing_id, current_user.id)
+    return {"message": "Listing deleted successfully"}
 
 @router.post("/listings/{listing_id}/images", response_model=ListingImageResponse, tags=["Listings"])
 def upload_listing_image(

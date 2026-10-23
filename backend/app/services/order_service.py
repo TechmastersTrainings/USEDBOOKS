@@ -196,3 +196,90 @@ class OrderService:
         db.commit()
         db.refresh(order)
         return order
+
+    @staticmethod
+    def list_seller_orders(db: Session, seller_id: str) -> List[Order]:
+        orders = (
+            db.query(Order)
+            .filter(Order.items.any(OrderItem.listing.has(Listing.seller_id == seller_id)))
+            .order_by(Order.created_at.desc())
+            .all()
+        )
+        return orders
+
+    @staticmethod
+    def confirm_seller_dispatch(db: Session, order_id: str, seller_id: str) -> Order:
+        order = (
+            db.query(Order)
+            .filter(
+                Order.id == order_id,
+                Order.items.any(OrderItem.listing.has(Listing.seller_id == seller_id))
+            )
+            .first()
+        )
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not belonging to your sales.")
+
+        if order.status in [OrderState.PAYMENT_CONFIRMED.value, OrderState.AWAITING_SELLER_CONFIRMATION.value]:
+            order.status = OrderState.PICKUP_SCHEDULED.value
+            db.commit()
+            db.refresh(order)
+            return order
+        elif order.status == OrderState.PICKUP_SCHEDULED.value:
+            order.status = OrderState.PICKED_UP.value
+            db.commit()
+            db.refresh(order)
+            return order
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Order in state '{order.status}' cannot be transitioned to pickup scheduled."
+            )
+
+    @staticmethod
+    def get_seller_earnings_summary(db: Session, seller_id: str) -> dict:
+        from app.models.user import SellerProfile
+        orders = (
+            db.query(Order)
+            .filter(Order.items.any(OrderItem.listing.has(Listing.seller_id == seller_id)))
+            .all()
+        )
+        profile = db.query(SellerProfile).filter(SellerProfile.user_id == seller_id).first()
+
+        total_books_sold = 0
+        gross_sales = 0.0
+        total_comm = 0.0
+        total_gst = 0.0
+        pending_escrow = 0.0
+        settled_payout = 0.0
+
+        for o in orders:
+            if o.status == OrderState.CANCELLED.value:
+                continue
+            for it in o.items:
+                if it.listing and it.listing.seller_id == seller_id:
+                    total_books_sold += 1
+                    gross_sales += it.price
+                    total_comm += it.commission_amount
+                    gst = round(it.commission_amount * 0.18, 2)
+                    total_gst += gst
+                    payout = it.seller_payout_amount
+
+                    if o.status == OrderState.COMPLETED.value:
+                        settled_payout += payout
+                    else:
+                        pending_escrow += payout
+
+        net_earnings = round(gross_sales - total_comm - total_gst, 2)
+
+        return {
+            "total_books_sold": total_books_sold,
+            "gross_sales_amount": round(gross_sales, 2),
+            "total_commission_deducted": round(total_comm, 2),
+            "total_gst_deducted": round(total_gst, 2),
+            "net_earnings": max(0.0, net_earnings),
+            "pending_escrow_amount": round(pending_escrow, 2),
+            "settled_payout_amount": round(settled_payout, 2),
+            "upi_id": profile.upi_id if profile else None,
+            "kyc_status": profile.kyc_status if profile else "pending"
+        }

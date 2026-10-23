@@ -161,3 +161,54 @@ class ListingService:
         db.commit()
         db.refresh(img)
         return img
+
+    @staticmethod
+    def list_seller_listings(db: Session, seller_id: str, status_filter: Optional[str] = None) -> List[Listing]:
+        q = db.query(Listing).filter(Listing.seller_id == seller_id)
+        if status_filter and status_filter != "all":
+            q = q.filter(Listing.status == status_filter)
+        return (
+            q.options(joinedload(Listing.book_catalogue), joinedload(Listing.images))
+            .order_by(desc(Listing.created_at))
+            .all()
+        )
+
+    @staticmethod
+    def update_listing(
+        db: Session,
+        listing_id: str,
+        seller_id: str,
+        asking_price: Optional[float] = None,
+        status: Optional[str] = None,
+        defect_description: Optional[str] = None
+    ) -> Listing:
+        listing = db.query(Listing).filter(Listing.id == listing_id).first()
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        if listing.seller_id != seller_id:
+            raise HTTPException(status_code=403, detail="Not authorized to edit this listing")
+
+        if asking_price is not None:
+            listing.asking_price = asking_price
+        if status is not None:
+            listing.status = status
+        if defect_description is not None:
+            listing.defect_description = defect_description
+
+        db.commit()
+        db.refresh(listing)
+        return listing
+
+    @staticmethod
+    def delete_listing(db: Session, listing_id: str, seller_id: str) -> bool:
+        listing = db.query(Listing).filter(Listing.id == listing_id).first()
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        if listing.seller_id != seller_id:
+            raise HTTPException(status_code=403, detail="Not authorized to delete this listing")
+
+        for img in listing.images:
+            db.delete(img)
+        db.delete(listing)
+        db.commit()
+        return True

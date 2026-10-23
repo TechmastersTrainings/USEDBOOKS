@@ -56,3 +56,14 @@ class PaginatedOrdersResponse(BaseModel):
     page: int
     limit: int
     items: List[OrderResponse]
+
+class SellerEarningsSummary(BaseModel):
+    total_books_sold: int
+    gross_sales_amount: float
+    total_commission_deducted: float
+    total_gst_deducted: float
+    net_earnings: float
+    pending_escrow_amount: float
+    settled_payout_amount: float
+    upi_id: Optional[str] = None
+    kyc_status: str = "pending"

@@ -75,3 +75,33 @@ def dispute_order(
     return OrderService.transition_order_state(
         db, order_id, OrderState.RETURN_REQUESTED, current_user.id, reason=dispute_in.reason
     )
+
+from typing import List
+from app.schemas.order import SellerEarningsSummary
+
+@router.get("/seller/list", response_model=List[OrderResponse], tags=["Orders & Checkout"])
+def list_my_seller_orders(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Retrieve orders where items were sold by the current logged-in seller."""
+    return OrderService.list_seller_orders(db, current_user.id)
+
+@router.get("/seller/earnings", response_model=SellerEarningsSummary, tags=["Orders & Checkout"])
+def get_my_seller_earnings(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Retrieve financial summary of gross sales, escrow, and settled payouts for seller."""
+    data = OrderService.get_seller_earnings_summary(db, current_user.id)
+    return SellerEarningsSummary(**data)
+
+@router.post("/{order_id}/confirm-dispatch", response_model=OrderResponse, tags=["Orders & Checkout"])
+def seller_confirm_dispatch(
+    order_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Seller marks book packed and ready for pickup, transitioning to pickup_scheduled."""
+    return OrderService.confirm_seller_dispatch(db, order_id, current_user.id)
+
