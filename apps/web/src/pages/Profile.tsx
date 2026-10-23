@@ -113,6 +113,9 @@ export const Profile: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         setAddresses(data);
+      } else if (res.status === 401 || res.status === 404) {
+        logout();
+        navigate('/login?redirect=/profile');
       }
     } catch {
       // Ignore
@@ -175,6 +178,9 @@ export const Profile: React.FC = () => {
         setAddrLine1('');
         setAddrLine2('');
         setAddrLandmark('');
+      } else if (res.status === 401 || res.status === 404) {
+        logout();
+        navigate('/login?redirect=/profile');
       }
     } catch {
       // Ignore

@@ -7,6 +7,9 @@ from app.models.book_catalogue import BookCatalogue
 from app.models.listing import Listing, ListingImage, ConditionGrade, ListingStatus
 
 def seed_sample_marketplace_data(db: Session):
+    from app.core.security import hash_password
+    default_pwd_hash = hash_password("Password@123")
+
     # 1. Create Verified Sellers in Bidar
     seller1 = db.query(User).filter(User.phone_number == "9845112233").first()
     if not seller1:
@@ -14,6 +17,7 @@ def seed_sample_marketplace_data(db: Session):
             full_name="Rajesh Patil",
             email="rajesh.patil@example.com",
             phone_number="9845112233",
+            hashed_password=default_pwd_hash,
             role=UserRole.SELLER.value,
             is_verified=True
         )
@@ -44,6 +48,8 @@ def seed_sample_marketplace_data(db: Session):
         db.add(addr1)
         db.flush()
     else:
+        if not seller1.hashed_password:
+            seller1.hashed_password = default_pwd_hash
         addr1 = db.query(Address).filter(Address.user_id == seller1.id).first()
 
     seller2 = db.query(User).filter(User.phone_number == "9880223344").first()
@@ -52,6 +58,7 @@ def seed_sample_marketplace_data(db: Session):
             full_name="Sunita Kulkarni",
             email="sunita.kulkarni@example.com",
             phone_number="9880223344",
+            hashed_password=default_pwd_hash,
             role=UserRole.SELLER.value,
             is_verified=True
         )
@@ -82,7 +89,73 @@ def seed_sample_marketplace_data(db: Session):
         db.add(addr2)
         db.flush()
     else:
+        if not seller2.hashed_password:
+            seller2.hashed_password = default_pwd_hash
         addr2 = db.query(Address).filter(Address.user_id == seller2.id).first()
+
+    # Pre-seed Shiva Bhalke Account
+    shiva = db.query(User).filter((User.phone_number == "9108950128") | (User.email == "shiva@bookloop.com")).first()
+    if not shiva:
+        shiva = User(
+            full_name="shiva bhalke",
+            email="shiva@bookloop.com",
+            phone_number="9108950128",
+            hashed_password=default_pwd_hash,
+            role=UserRole.BUYER.value,
+            is_verified=True
+        )
+        db.add(shiva)
+        db.flush()
+        shiva_addr = Address(
+            user_id=shiva.id,
+            full_name="shiva bhalke",
+            phone_number="09108950128",
+            address_line1="BIDAR",
+            address_line2="Laderi",
+            landmark="laxmi nivas",
+            city="Bidar",
+            state="Karnataka",
+            pincode="585401",
+            is_default=True,
+            is_delivery_address=True,
+            is_pickup_address=True
+        )
+        db.add(shiva_addr)
+        db.flush()
+    else:
+        if not shiva.hashed_password:
+            shiva.hashed_password = default_pwd_hash
+
+    # Pre-seed Demo Buyer Account
+    demo_buyer = db.query(User).filter((User.phone_number == "9876543210") | (User.email == "demo@bookloop.com")).first()
+    if not demo_buyer:
+        demo_buyer = User(
+            full_name="Demo Buyer",
+            email="demo@bookloop.com",
+            phone_number="9876543210",
+            hashed_password=default_pwd_hash,
+            role=UserRole.BUYER.value,
+            is_verified=True
+        )
+        db.add(demo_buyer)
+        db.flush()
+        demo_addr = Address(
+            user_id=demo_buyer.id,
+            full_name="Demo Buyer",
+            phone_number="9876543210",
+            address_line1="Near Gandhi Gunj, Station Road",
+            city="Bidar",
+            state="Karnataka",
+            pincode="585401",
+            is_default=True,
+            is_delivery_address=True,
+            is_pickup_address=True
+        )
+        db.add(demo_addr)
+        db.flush()
+    else:
+        if not demo_buyer.hashed_password:
+            demo_buyer.hashed_password = default_pwd_hash
 
     # 2. Find Category References
     upsc_cat = db.query(Category).filter(Category.name == "UPSC Civil Services").first()

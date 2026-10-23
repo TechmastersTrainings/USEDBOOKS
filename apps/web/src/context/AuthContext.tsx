@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userData: UserProfile = await res.json();
         setUser(userData);
         localStorage.setItem('bookloop_user', JSON.stringify(userData));
-      } else if (res.status === 401) {
+      } else if (res.status === 401 || res.status === 404) {
         logout();
       }
     } catch {

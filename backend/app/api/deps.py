@@ -37,9 +37,34 @@ def get_current_user(
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        try:
+            # Ephemeral cloud database resilience:
+            # If token signature is cryptographically valid from our SECRET_KEY,
+            # auto-rehydrate the user account so server restarts don't orphan active sessions.
+            role = payload.get("role", UserRole.BUYER.value)
+            user = User(
+                id=user_id,
+                full_name="User",
+                role=role if role in [UserRole.BUYER.value, UserRole.SELLER.value, UserRole.ADMIN.value] else UserRole.BUYER.value,
+                is_active=True,
+                is_verified=True,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        except Exception:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session expired or user account not found. Please log in again.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
     if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user account")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Inactive user account",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     return user
 

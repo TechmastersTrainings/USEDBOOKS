@@ -23,7 +23,7 @@ interface Address {
 
 export const Checkout: React.FC = () => {
   const { items, totalPrice, deliveryFee, clearCart } = useCart();
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -76,6 +76,9 @@ export const Checkout: React.FC = () => {
         } else {
           setShowNewAddressForm(true);
         }
+      } else if (res.status === 401 || res.status === 404) {
+        logout();
+        navigate('/login?redirect=/checkout');
       }
     } catch {
       // Ignore
