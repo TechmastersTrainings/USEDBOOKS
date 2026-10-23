@@ -66,3 +66,9 @@ class UserStatusUpdateRequest(BaseModel):
     is_active: Optional[bool] = None
     role: Optional[str] = None
     kyc_status: Optional[str] = None
+
+class AdminOrderStatusUpdate(BaseModel):
+    status: str
+    tracking_number: Optional[str] = None
+    notes: Optional[str] = None
+

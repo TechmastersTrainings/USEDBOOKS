@@ -93,7 +93,7 @@ def seed_sample_marketplace_data(db: Session):
             seller2.hashed_password = default_pwd_hash
         addr2 = db.query(Address).filter(Address.user_id == seller2.id).first()
 
-    # Pre-seed Shiva Bhalke Account
+    # Pre-seed Shiva Bhalke Account (with Admin & Buyer capabilities)
     shiva = db.query(User).filter((User.phone_number == "9108950128") | (User.email == "shiva@bookloop.com")).first()
     if not shiva:
         shiva = User(
@@ -101,7 +101,7 @@ def seed_sample_marketplace_data(db: Session):
             email="shiva@bookloop.com",
             phone_number="9108950128",
             hashed_password=default_pwd_hash,
-            role=UserRole.BUYER.value,
+            role=UserRole.ADMIN.value,
             is_verified=True
         )
         db.add(shiva)
@@ -123,8 +123,28 @@ def seed_sample_marketplace_data(db: Session):
         db.add(shiva_addr)
         db.flush()
     else:
+        shiva.role = UserRole.ADMIN.value
         if not shiva.hashed_password:
             shiva.hashed_password = default_pwd_hash
+
+    # Pre-seed SuperAdmin Account
+    superadmin = db.query(User).filter((User.email == "admin@bookloop.com") | (User.phone_number == "9999999999")).first()
+    if not superadmin:
+        superadmin = User(
+            full_name="BookLoop SuperAdmin",
+            email="admin@bookloop.com",
+            phone_number="9999999999",
+            hashed_password=default_pwd_hash,
+            role=UserRole.ADMIN.value,
+            is_verified=True
+        )
+        db.add(superadmin)
+        db.flush()
+    else:
+        superadmin.email = "admin@bookloop.com"
+        superadmin.role = UserRole.ADMIN.value
+        if not superadmin.hashed_password:
+            superadmin.hashed_password = default_pwd_hash
 
     # Pre-seed Demo Buyer Account
     demo_buyer = db.query(User).filter((User.phone_number == "9876543210") | (User.email == "demo@bookloop.com")).first()

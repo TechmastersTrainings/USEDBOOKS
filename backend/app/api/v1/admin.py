@@ -13,7 +13,8 @@ from app.schemas.admin import (
     ListingModerationResponse,
     SystemSettingCreateUpdate,
     SystemSettingResponse,
-    UserStatusUpdateRequest
+    UserStatusUpdateRequest,
+    AdminOrderStatusUpdate
 )
 from app.schemas.order import OrderResponse
 from app.schemas.listing import ListingResponse
@@ -21,6 +22,40 @@ from app.schemas.user import UserResponse
 from app.services.admin_service import AdminService
 
 router = APIRouter(prefix="/admin", tags=["Administration, Moderation & Governance"])
+
+@router.get("/orders", response_model=List[OrderResponse])
+def list_all_orders(
+    status_filter: Optional[str] = Query(None),
+    limit: int = Query(50, le=200),
+    current_admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Order)
+    if status_filter:
+        query = query.filter(Order.status == status_filter)
+    return query.order_by(Order.created_at.desc()).limit(limit).all()
+
+@router.patch("/orders/{order_id}/status", response_model=OrderResponse)
+def update_order_status_admin(
+    order_id: str,
+    payload: AdminOrderStatusUpdate,
+    current_admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found.")
+    
+    order.status = payload.status
+    if payload.status == OrderState.COMPLETED.value:
+        try:
+            from app.services.ledger_service import LedgerService
+            LedgerService.record_settlement_disbursement(db=db, order=order, payout_reference=f"ADMIN-SETTLE-{order.order_number}")
+        except Exception:
+            pass
+    db.commit()
+    db.refresh(order)
+    return order
 
 @router.get("/overview", response_model=AdminPlatformOverview)
 def get_platform_overview(

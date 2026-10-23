@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   BookOpen, Search, PlusCircle, ShoppingBag, User, MapPin,
-  Menu, X, Home, Compass, Package, HelpCircle, LogOut, ChevronRight
+  Menu, X, Home, Compass, Package, HelpCircle, LogOut, ChevronRight, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -189,6 +189,24 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
+
+            {isAuthenticated && user && user.role === 'admin' && (
+              <Link to="/admin" aria-label="Admin Portal" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: '#ede9fe',
+                color: '#6b21a8',
+                fontWeight: 700,
+                fontSize: 'var(--text-sm)',
+                textDecoration: 'none'
+              }}>
+                <ShieldCheck size={15} />
+                <span>Admin</span>
+              </Link>
+            )}
 
             {isAuthenticated && user ? (
               <Link to="/profile" aria-label="Account" style={{
@@ -560,6 +578,28 @@ export const Navbar: React.FC = () => {
                 >
                   <Package size={18} />
                   <span>My Orders & Escrow</span>
+                </Link>
+              )}
+
+              {isAuthenticated && user && user.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-3)',
+                    padding: '12px 14px',
+                    borderRadius: 'var(--radius-md)',
+                    color: '#6b21a8',
+                    backgroundColor: '#ede9fe',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-sm)',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <ShieldCheck size={18} />
+                  <span>Admin Console</span>
                 </Link>
               )}
 

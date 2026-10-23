@@ -24,6 +24,7 @@ import { Profile } from './pages/Profile';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { OrderDetails } from './pages/OrderDetails';
+import { Admin } from './pages/Admin';
 import './styling/tokens.css';
 
 export const App: React.FC = () => {
@@ -45,6 +46,7 @@ export const App: React.FC = () => {
                 <Route path="/login" element={<Auth />} />
                 <Route path="/register" element={<Auth />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/admin" element={<Admin />} />
               <Route path="/about" element={<About />} />
               <Route path="/delivery-policy" element={<DeliveryPolicy />} />
               <Route path="/returns" element={<ReturnsRefunds />} />
