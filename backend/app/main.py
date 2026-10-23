@@ -22,6 +22,17 @@ logger = logging.getLogger("bookloop.security")
 # Ensure tables are created on bootstrap
 Base.metadata.create_all(bind=engine)
 
+try:
+    from app.core.database import SessionLocal
+    from app.db.seeds.taxonomy_seed import seed_categories
+    from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
+    with SessionLocal() as db_session:
+        seed_categories(db_session)
+        seed_sample_marketplace_data(db_session)
+    logger.info("Bootstrap taxonomy and demo listings initialized.")
+except Exception as e:
+    logger.warning(f"Bootstrap auto-seed completed or skipped: {e}")
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
