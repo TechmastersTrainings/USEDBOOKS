@@ -25,13 +25,13 @@ Base.metadata.create_all(bind=engine)
 try:
     from app.core.database import SessionLocal
     from app.db.seeds.taxonomy_seed import seed_categories
-    from app.db.seeds.sample_listings_seed import seed_sample_marketplace_data
+    from app.db.seeds.admin_seed import seed_admin_accounts
     with SessionLocal() as db_session:
         seed_categories(db_session)
-        seed_sample_marketplace_data(db_session)
-    logger.info("Bootstrap taxonomy and demo listings initialized.")
+        seed_admin_accounts(db_session)
+    logger.info("Bootstrap taxonomy and admin accounts initialized with zero dummy data.")
 except Exception as e:
-    logger.warning(f"Bootstrap auto-seed completed or skipped: {e}")
+    logger.warning(f"Bootstrap initialization completed or skipped: {e}")
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

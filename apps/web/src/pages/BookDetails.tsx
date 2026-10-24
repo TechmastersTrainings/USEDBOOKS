@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, Check, ShoppingBag, AlertTriangle, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { MapPin, Check, ShoppingBag, AlertTriangle, ShieldCheck, ArrowLeft, BookOpen } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { API_BASE_URL } from '../config/api';
 
@@ -82,83 +82,54 @@ export const BookDetails: React.FC = () => {
     }
   };
 
-  const SAMPLE_CATALOG: Record<string, any> = {
-    '1': {
-      title: 'Indian Polity for Civil Services (6th Edition)',
-      authors: 'M. Laxmikanth',
-      publisher: 'McGraw Hill India',
-      isbn: '9789389538472',
-      askingPrice: 380,
-      originalMrp: 850,
-      conditionGrade: 'very_good',
-      description: 'Comprehensive foundational text on the Constitution of India, fundamental rights, and civil administrative institutions. Ideal for UPSC & KPSC.',
-      coverImageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80'
-    },
-    '2': {
-      title: 'Higher Engineering Mathematics',
-      authors: 'Dr. B.S. Grewal',
-      publisher: 'Khanna Publishers',
-      isbn: '9788174091955',
-      askingPrice: 420,
-      originalMrp: 995,
-      conditionGrade: 'like_new',
-      description: 'Standard engineering mathematics textbook covering calculus, linear algebra, vector analysis, and differential equations.',
-      coverImageUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=900&auto=format&fit=crop&q=80'
-    },
-    '3': {
-      title: 'Atomic Habits',
-      authors: 'James Clear',
-      publisher: 'Random House Business',
-      isbn: '9781847941831',
-      askingPrice: 260,
-      originalMrp: 599,
-      conditionGrade: 'good',
-      description: 'An easy & proven way to build good habits and break bad ones. Insights on behavioral psychology and self-improvement.',
-      coverImageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80'
-    },
-    '4': {
-      title: 'Karvalo & Other Stories (Kannada)',
-      authors: 'K.P. Poornachandra Tejaswi',
-      publisher: 'Pustaka Prakashana',
-      isbn: '9788193328491',
-      askingPrice: 180,
-      originalMrp: 350,
-      conditionGrade: 'very_good',
-      description: 'Acclaimed modern Kannada classic exploring scientific curiosity, Western Ghats biodiversity, and human observation.',
-      coverImageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=900&auto=format&fit=crop&q=80'
-    }
-  };
+  if (loading) {
+    return (
+      <div className="container" style={{ padding: 'var(--space-16) 0', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)' }}>Loading book listing details...</p>
+      </div>
+    );
+  }
 
-  const fallback = (id && SAMPLE_CATALOG[id]) || SAMPLE_CATALOG['1'];
+  if (!listing) {
+    return (
+      <div className="container" style={{ padding: 'var(--space-16) var(--space-4)', textAlign: 'center', maxWidth: '480px', margin: '0 auto' }}>
+        <BookOpen size={48} color="var(--text-tertiary)" style={{ margin: '0 auto var(--space-4)' }} />
+        <h2 style={{ fontSize: 'var(--text-xl)', marginBottom: 'var(--space-2)' }}>Book Listing Not Found</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
+          This book listing is no longer available or does not exist in the marketplace catalog.
+        </p>
+        <Link to="/explore" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+          <ArrowLeft size={16} />
+          <span>Browse Available Books</span>
+        </Link>
+      </div>
+    );
+  }
 
-  const title = listing?.book_catalogue?.title || listing?.custom_title || fallback.title;
-  const authors = listing?.book_catalogue?.authors || listing?.custom_authors || fallback.authors;
-  const publisher = listing?.book_catalogue?.publisher || fallback.publisher;
-  const isbn = listing?.book_catalogue?.isbn_13 || fallback.isbn;
-  const askingPrice = listing?.asking_price ?? fallback.askingPrice;
-  const originalMrp = listing?.book_catalogue?.original_mrp ?? fallback.originalMrp;
-  const condition = listing?.condition_grade || fallback.conditionGrade;
-  const description = listing?.book_catalogue?.description || fallback.description;
+  const title = listing.book_catalogue?.title || listing.custom_title || 'Untitled Book';
+  const authors = listing.book_catalogue?.authors || listing.custom_authors || 'Unknown Author';
+  const publisher = listing.book_catalogue?.publisher || 'Not specified';
+  const isbn = listing.book_catalogue?.isbn_13 || listing.book_catalogue?.isbn_10 || 'N/A';
+  const askingPrice = listing.asking_price ?? 0;
+  const originalMrp = listing.book_catalogue?.original_mrp || 0;
+  const condition = listing.condition_grade || 'good';
+  const description = listing.book_catalogue?.description || listing.defect_description || 'Pre-loved authentic copy listed by a reader in Bidar.';
 
-  const photos = listing?.images && listing.images.length > 0
+  const photos = listing.images && listing.images.length > 0
     ? listing.images.map(img => img.image_url)
-    : [
-        fallback.coverImageUrl,
-        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80',
-      ];
+    : [listing.book_catalogue?.cover_image_url || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80'];
 
   const handleAddToCart = () => {
-    const primaryImg = listing?.images?.find(img => img.is_primary)?.image_url || listing?.book_catalogue?.cover_image_url || fallback.coverImageUrl;
+    const primaryImg = listing.images?.find(img => img.is_primary)?.image_url || listing.book_catalogue?.cover_image_url || photos[0];
 
     addToCart({
-      listingId: listing?.id || id || 'book-1',
+      listingId: listing.id,
       title,
       authors,
       askingPrice,
       conditionGrade: condition,
       coverImage: primaryImg,
-      missingPagesDefect: listing?.missing_pages_defect || false,
+      missingPagesDefect: listing.missing_pages_defect || false,
     });
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 3000);
@@ -169,15 +140,7 @@ export const BookDetails: React.FC = () => {
     navigate('/cart');
   };
 
-  if (loading) {
-    return (
-      <div className="container" style={{ padding: 'var(--space-16) 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Loading book listing details...</p>
-      </div>
-    );
-  }
-
-  const savingsPercent = originalMrp ? Math.round(((originalMrp - askingPrice) / originalMrp) * 100) : 0;
+  const savingsPercent = originalMrp > 0 ? Math.round(((originalMrp - askingPrice) / originalMrp) * 100) : 0;
 
   return (
     <div className="container" style={{ paddingTop: 'var(--space-6)', paddingBottom: 'var(--space-16)' }}>

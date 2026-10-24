@@ -168,3 +168,13 @@ def update_user_status(
         kyc_status=payload.kyc_status
     )
     return updated
+
+@router.post("/maintenance/purge-mock-data")
+def purge_all_mock_data_endpoint(
+    current_admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Completely wipe all dummy/test listings, orders, payments, shipments, and mock test users from the database."""
+    from app.db.purge_mock_data import purge_all_mock_data
+    purge_all_mock_data()
+    return {"status": "success", "message": "All mock and dummy data successfully purged from database."}

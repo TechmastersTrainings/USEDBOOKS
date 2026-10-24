@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookCard } from '../components/BookCard';
-import { ArrowRight, Sparkles, BookOpen, GraduationCap, Award, Compass, Cpu } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen, GraduationCap, Award, Compass, Cpu, PlusCircle } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 export const Home: React.FC = () => {
@@ -13,57 +13,11 @@ export const Home: React.FC = () => {
     { name: 'Non-Fiction & Self Help', slug: 'non-fiction', icon: <Compass size={20} />, count: '160+ books' },
   ];
 
-  const sampleBooks = [
-    {
-      id: '1',
-      title: 'Indian Polity for Civil Services',
-      authors: 'M. Laxmikanth',
-      price: 380,
-      originalMrp: 850,
-      conditionGrade: 'very_good' as const,
-      sellerCity: 'Bidar (Gandhi Gunj)',
-      categoryName: 'Competitive Exams',
-      coverImageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: '2',
-      title: 'Higher Engineering Mathematics',
-      authors: 'Dr. B.S. Grewal',
-      price: 420,
-      originalMrp: 995,
-      conditionGrade: 'like_new' as const,
-      sellerCity: 'Bidar (Naubad)',
-      categoryName: 'Engineering',
-      coverImageUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: '3',
-      title: 'Atomic Habits',
-      authors: 'James Clear',
-      price: 260,
-      originalMrp: 599,
-      conditionGrade: 'good' as const,
-      sellerCity: 'Bidar (Old City)',
-      categoryName: 'Self-Help',
-      coverImageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80'
-    },
-    {
-      id: '4',
-      title: 'Karvalo & Other Stories (Kannada)',
-      authors: 'K.P. Poornachandra Tejaswi',
-      price: 180,
-      originalMrp: 350,
-      conditionGrade: 'very_good' as const,
-      sellerCity: 'Bidar (Mailoor)',
-      categoryName: 'Kannada Literature',
-      coverImageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80'
-    }
-  ];
-
-  const [featuredBooks, setFeaturedBooks] = useState<any[]>(sampleBooks);
+  const [featuredBooks, setFeaturedBooks] = useState<any[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/v1/listings?limit=4`)
+    fetch(`${API_BASE_URL}/api/v1/listings?limit=8`)
       .then(res => res.json())
       .then(data => {
         if (data.items && data.items.length > 0) {
@@ -75,14 +29,19 @@ export const Home: React.FC = () => {
             originalMrp: item.book_catalogue?.original_mrp,
             conditionGrade: item.condition_grade,
             sellerCity: 'Bidar',
-            categoryName: item.book_catalogue?.category_id ? 'Textbook' : 'Verified',
+            categoryName: item.book_catalogue?.category_id ? 'Textbook' : 'Verified Copy',
             coverImageUrl: item.images?.[0]?.image_url || item.book_catalogue?.cover_image_url || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
           }));
           setFeaturedBooks(mapped);
+        } else {
+          setFeaturedBooks([]);
         }
       })
       .catch(() => {
-        // Fallback to sampleBooks
+        setFeaturedBooks([]);
+      })
+      .finally(() => {
+        setLoadingBooks(false);
       });
   }, []);
 
@@ -249,11 +208,41 @@ export const Home: React.FC = () => {
           </Link>
         </div>
 
-        <div className="books-responsive-grid">
-          {featuredBooks.map(book => (
-            <BookCard key={book.id} {...book} />
-          ))}
-        </div>
+        {loadingBooks ? (
+          <div style={{ textAlign: 'center', padding: 'var(--space-12) 0', color: 'var(--text-secondary)' }}>
+            <p style={{ fontSize: 'var(--text-sm)' }}>Loading genuine listings from readers...</p>
+          </div>
+        ) : featuredBooks.length > 0 ? (
+          <div className="books-responsive-grid">
+            {featuredBooks.map(book => (
+              <BookCard key={book.id} {...book} />
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            textAlign: 'center',
+            padding: 'var(--space-12) var(--space-4)',
+            backgroundColor: 'var(--bg-subtle)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px dashed var(--border-subtle)',
+            maxWidth: '560px',
+            margin: '0 auto'
+          }}>
+            <BookOpen size={40} color="var(--text-tertiary)" style={{ margin: '0 auto var(--space-3)' }} />
+            <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>No Books Listed Yet</h3>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-5)', lineHeight: 1.5 }}>
+              The marketplace has been freshly initialized! Be the first student or reader in Bidar to list your pre-loved textbooks or novels.
+            </p>
+            <Link
+              to="/sell"
+              className="btn btn-primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}
+            >
+              <PlusCircle size={18} />
+              <span>List Your First Book for Sale</span>
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* How It Works */}
