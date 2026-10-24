@@ -199,6 +199,22 @@ class AdminService:
     @staticmethod
     def get_system_settings(db: Session, public_only: bool = False) -> List[SystemSetting]:
         query = db.query(SystemSetting)
+        existing = query.all()
+        if not existing:
+            from app.core.config import settings
+            defaults = [
+                ("commission_percent", str(settings.DEFAULT_COMMISSION_PERCENT), "Marketplace platform commission percentage", True),
+                ("gst_percent", str(settings.COMMISSION_GST_PERCENT), "GST on platform commission percentage", True),
+                ("intracity_shipping_flat", str(settings.DEFAULT_INTRACITY_SHIPPING_FLAT_INR), "Flat shipping fee within launch pilot city (INR)", True),
+                ("intercity_shipping_base", str(settings.DEFAULT_INTERCITY_SHIPPING_BASE_INR), "Standard intercity courier shipping fee (INR)", True),
+                ("launch_pincodes", ", ".join(settings.LAUNCH_PINCODES), "Active pilot city delivery pincodes", True),
+                ("settlement_hold_days", str(settings.SETTLEMENT_HOLD_DAYS), "Inspection escrow hold duration before seller payout (Days)", True),
+            ]
+            for key, val, desc, pub in defaults:
+                db.add(SystemSetting(key=key, value=val, description=desc, is_public=pub))
+            db.commit()
+            return db.query(SystemSetting).order_by(SystemSetting.key.asc()).all()
+
         if public_only:
             query = query.filter(SystemSetting.is_public == True)
         return query.order_by(SystemSetting.key.asc()).all()

@@ -74,15 +74,26 @@ class OrderService:
                 )
             listings.append(listing)
 
-        # Financial Calculations
+        # Financial Calculations (Dynamic from Admin System Settings with Config fallback)
         total_books_amount = sum(l.asking_price for l in listings)
         
-        # Determine intracity Bidar vs intercity shipping
-        is_intracity = delivery_address.pincode in settings.LAUNCH_PINCODES
-        delivery_fee = settings.DEFAULT_INTRACITY_SHIPPING_FLAT_INR if is_intracity else settings.DEFAULT_INTERCITY_SHIPPING_BASE_INR
+        from app.models.system_setting import SystemSetting
+        comm_row = db.query(SystemSetting).filter(SystemSetting.key == "commission_percent").first()
+        gst_row = db.query(SystemSetting).filter(SystemSetting.key == "gst_percent").first()
+        local_ship_row = db.query(SystemSetting).filter(SystemSetting.key == "intracity_shipping_flat").first()
+        inter_ship_row = db.query(SystemSetting).filter(SystemSetting.key == "intercity_shipping_base").first()
+        pincodes_row = db.query(SystemSetting).filter(SystemSetting.key == "launch_pincodes").first()
 
-        comm_pct = settings.DEFAULT_COMMISSION_PERCENT / 100.0
-        gst_pct = settings.COMMISSION_GST_PERCENT / 100.0
+        active_pincodes = [p.strip() for p in pincodes_row.value.split(",")] if pincodes_row else settings.LAUNCH_PINCODES
+        is_intracity = delivery_address.pincode in active_pincodes
+
+        if is_intracity:
+            delivery_fee = float(local_ship_row.value) if local_ship_row else settings.DEFAULT_INTRACITY_SHIPPING_FLAT_INR
+        else:
+            delivery_fee = float(inter_ship_row.value) if inter_ship_row else settings.DEFAULT_INTERCITY_SHIPPING_BASE_INR
+
+        comm_pct = (float(comm_row.value) / 100.0) if comm_row else (settings.DEFAULT_COMMISSION_PERCENT / 100.0)
+        gst_pct = (float(gst_row.value) / 100.0) if gst_row else (settings.COMMISSION_GST_PERCENT / 100.0)
         
         platform_commission = round(total_books_amount * comm_pct, 2)
         tax_amount = round(platform_commission * gst_pct, 2)
