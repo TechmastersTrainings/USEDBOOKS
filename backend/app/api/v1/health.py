@@ -16,6 +16,8 @@ def get_health(db: Session = Depends(get_db)):
         db.execute(text("SELECT 1"))
         db_ok = True
         details["database"] = "reachable"
+        if db.bind:
+            details["database_engine"] = db.bind.dialect.name
     except Exception as e:
         details["database"] = f"unreachable: {str(e)}"
 
