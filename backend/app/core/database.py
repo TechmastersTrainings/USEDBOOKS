@@ -6,8 +6,9 @@ from app.core.config import settings
 # 1. Normalize database URL for PostgreSQL compatibility
 database_url = settings.DATABASE_URL
 if database_url.startswith("postgres://"):
-    # SQLAlchemy 1.4+ and 2.0+ require 'postgresql://' instead of legacy 'postgres://'
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+    database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif database_url.startswith("postgresql://") and not database_url.startswith("postgresql+"):
+    database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 # 2. Configure engine parameters based on dialect
 engine_kwargs: Dict[str, Any] = {
